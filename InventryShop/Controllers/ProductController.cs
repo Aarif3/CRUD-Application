@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -36,7 +37,12 @@ namespace InventryShop.Controllers
 
         public ActionResult Create()
         {
-            var data = db.SignupTbl.FirstOrDefault(model => model.UserName == User.Identity.Name);
+            var identity = User.Identity as ClaimsIdentity;
+            var claims = identity.Claims;
+            var identifier = claims.Where(model => model.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+            string name = identifier.Value;
+
+            var data = db.SignupTbl.FirstOrDefault(model => model.UserName == name);
 
             Product product = new Product()
             {

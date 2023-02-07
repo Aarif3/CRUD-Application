@@ -7,6 +7,7 @@ using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -38,6 +39,7 @@ namespace InventryShop.Controllers
             return View(data);
         }
 
+        [Authorize(Roles ="Admin")]
         public  ActionResult Create() 
         {
             return View();
@@ -45,6 +47,7 @@ namespace InventryShop.Controllers
 
         [ActionName("Create")]
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateAsync(Category c)
         {
             if (ModelState.IsValid == true)
@@ -64,7 +67,9 @@ namespace InventryShop.Controllers
             return View();
         }
 
+
         [ActionName("Edit")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> EditAsync(int id)
         {
             //var idvalue =await db.Categories.Where(Model => Model.Id == id).FirstOrDefaultAsync();
@@ -76,6 +81,8 @@ namespace InventryShop.Controllers
 
         [HttpPost]
         [ActionName("Edit")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> EditAsync (Category c)
         {
             if (ModelState.IsValid)
@@ -110,6 +117,8 @@ namespace InventryShop.Controllers
 
 
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> DeleteAsync(int id)
         {
             //var deleteValue =await db.Categories.Where(Model => Model.Id == id).FirstOrDefaultAsync();
@@ -119,6 +128,7 @@ namespace InventryShop.Controllers
 
         [HttpPost]
         [ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult> DeleteAsync(Category c)
         {
@@ -142,6 +152,8 @@ namespace InventryShop.Controllers
 
 
         [ActionName("AddProduct")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> AddProductAsync(int id)
         {
             //var data = await db.AddProduct(id);
@@ -151,6 +163,8 @@ namespace InventryShop.Controllers
         }
 
         [ActionName("AddProductdata")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> AddProductDataAsync(int Pid, int Cid)
         {
             bool a =await db.AddProductInCategory(Pid,Cid);
@@ -205,24 +219,24 @@ namespace InventryShop.Controllers
         //    return View(data); 
         //}
 
-
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeActive(Category cat)
         {
             bool a =await db.DeActiveCategory(cat.Id);
             if(a==true)
             {
-                //TempData["Message"] = "<script>alert('Category DeActive Successfully')</script>";
                 return RedirectToAction("Index");
             }
             else
             {
-                //TempData["Message"] = "<script>alert('Opps Not DeActivated ')</script>";
                 ModelState.Clear();
             }
             return View();
 
         }
 
+
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Active(Category cat)
         {
             bool a =await db.ActiveCategory(cat.Id);
@@ -233,7 +247,6 @@ namespace InventryShop.Controllers
             }
             else
             {
-                //TempData["Message"] = "<script>alert('Opps Not Activated ')</script>";
                 ModelState.Clear();
             }
             return View();
@@ -242,7 +255,13 @@ namespace InventryShop.Controllers
 
         public async Task<ActionResult> Report()
         {
-            var data1 = db.SignupTbl.FirstOrDefault(model => model.UserName == User.Identity.Name);
+            var identity = User.Identity as ClaimsIdentity;
+            var claims = identity.Claims;
+
+            var IdenfierName = claims.Where(model => model.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
+
+            string name = IdenfierName.Value;
+            var data1 = db.SignupTbl.FirstOrDefault(model => model.UserName == name);
 
             var data =await db.GetReport(data1.id);
             return View(data);

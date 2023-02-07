@@ -1,7 +1,9 @@
 ﻿using InventryShop.Models;
+using InventryShop.ValidationFile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -37,18 +39,24 @@ namespace InventryShop.Controllers
             return View();
         }
 
+        
         [HttpPost]
         public ActionResult Login(SignUp sp,string ReturnUrl)
         {
             var s = db.SignupTbl.FirstOrDefault(model => model.UserName == sp.UserName && model.Password == sp.Password);
             if(s != null)
             {
-                FormsAuthentication.SetAuthCookie(sp.UserName, false);
-                if (Url.IsLocalUrl(ReturnUrl) && ReturnUrl.Length > 1 && ReturnUrl.StartsWith("/"))
-                {
-                    return Redirect(ReturnUrl);
-                        
-                }
+                //FormsAuthentication.SetAuthCookie(sp.UserName, false);
+                //if (Url.IsLocalUrl(ReturnUrl) && ReturnUrl.Length > 1 && ReturnUrl.StartsWith("/"))
+                //{
+                //    return Redirect(ReturnUrl);
+
+                //}
+
+                var token = TokenCreate.JwtCreateToken(s);
+
+                Response.Cookies.Set(new HttpCookie("Bearer", token));
+
                 return RedirectToAction("Index", "Home");
 
             }
@@ -61,7 +69,10 @@ namespace InventryShop.Controllers
 
         public ActionResult Logout()
         {
-            FormsAuthentication.SignOut();
+            var cookie = Request.Cookies["Bearer"];
+            cookie.Expires = DateTime.Now.AddMinutes(2);
+
+            Response.Cookies.Add(cookie);
             return RedirectToAction("Login");
         }
     }

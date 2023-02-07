@@ -29,7 +29,7 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <div class="text-right">
-                        <a>Hello @User.Identity.Name</a>
+                        <a>Hello</a>
                         <Button class="btn btn-warning">@Html.ActionLink("LogOut", "Logout", "Login")</Button>
                      </div>
                 }
