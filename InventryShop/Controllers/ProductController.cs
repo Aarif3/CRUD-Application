@@ -1,4 +1,5 @@
-﻿using InventryShop.Models;
+﻿using InventryShop.InterFace;
+using InventryShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,25 +16,32 @@ namespace InventryShop.Controllers
     [Authorize]
     public class ProductController : Controller
     {
+        private IProduct Product;
+        public ProductController(IProduct pro)
+        {
+            Product= pro;
+        }
+
+
+
         ProductContext db = new ProductContext();
         // GET: Product
 
         [ActionName("Index")]
         public async Task<ActionResult> IndexAsync(int PageNumber = 1)
         {
-            
-                var parameter = new[]
+            var parameter = new[]
                 {
                  new SqlParameter ("@PageNbr",PageNumber),      //[0]index
                  new SqlParameter ("@TotalPages",SqlDbType.Int) { Direction = ParameterDirection.Output}    //[1]index
                 };
             var data =await db.Products.SqlQuery("Execute spGetpageRow @PageNbr,@Totalpages output", parameter).ToListAsync();
 
-            //parameter[1] is SqlParameter ("@TotalPages",SqlDbType.Int) { Direction = ParameterDirection.Output}
             ViewBag.Totalpages = (int)parameter[1].Value;
             return View(data);
 
         }
+
 
         public ActionResult Create()
         {
@@ -56,108 +64,59 @@ namespace InventryShop.Controllers
         [ActionName("Create")]
         public async Task<ActionResult> CreateAsync(Product p)
         {
-            try
+            var data =await Product.Create(p);
+            if (data)
             {
-                if (ModelState.IsValid)
-                {
-                    //db.Products.Add(p);
-                    bool check = await db.CreateProductAsync(p);
-
-                    //int a =await db.SaveChangesAsync();
-                    if (check == true)
-                    {
-                        TempData["Message"] = "<script>alert('Item Created successfully')</script>";
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        TempData["Message"] = "<script>alert('Item Created successfully')</script>";
-                    }
-                }
-
-
-                return View();
+                TempData["Message"] = "<script>alert('Item Created successfully')</script>";
+                return RedirectToAction("Index");
             }
-
-            catch
-            {
-                return View();
-            }
-
-
+            return View();
         }
 
         [ActionName("Edit")]
         public async Task<ActionResult> EditAsync(int id)
         {
-            //var row = await db.Products.Where(Model => Model.Id == id).FirstOrDefaultAsync();
-            //var row =db.Getproduct().Find(Model => Model.Id== id);
-            var row = await db.GetproductByIdAsync(id);
-            return View(row);
+            var data =await Product.GetProductByID(id);
+
+            return View(data);
         }
 
         [HttpPost]
         [ActionName("Edit")]
         public async Task<ActionResult> EditAsync(Product p)
         {
-            //db.Entry(p).State = EntityState.Modified;
-            //int a =await db.SaveChangesAsync();
-            try
+            var data =await Product.Edit(p);
+            if (data)
             {
-                if (ModelState.IsValid)
-                {
-                    bool a = await db.EditProductAsync(p);
-                    if (a == true)
-                    {
-                        TempData["Message"] = "<script>alert('Data Edited Successfully')</script>";
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        TempData["Message"] = "<script>alert('Data Not Edited')</script>";
-                        ModelState.Clear();
-                    }
-
-
-                }
-                return View();
-
+                TempData["Message"] = "<script>alert('Data Edited Successfully')</script>";
+                return RedirectToAction("Index");
             }
-            catch
-            {
-                return View();
-            }
-
-
+            return View();
         }
 
         [ActionName("Details")]
         public async Task<ActionResult> DetailsAsync(int id)
         {
-            //var detailsvalue = await db.Products.Where(Model => Model.Id == id).FirstOrDefaultAsync();
-
-            //var detailsvalue = db.DetailsProductAsync();
-            var detailsvalue =await db.GetproductByIdAsync(id);
+            var detailsvalue =await Product.GetProductByID(id);
             return View(detailsvalue);
         }
 
         [ActionName("Delete")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            //var deletevalue = await db.Products.Where(Model => Model.Id == id).FirstOrDefaultAsync();
-            var deletevalue = await db.GetproductByIdAsync(id);
-            return View(deletevalue);
+            var data = await Product.GetProductByID(id);
+            return View(data);
         }
 
         [HttpPost]
         [ActionName("Delete")]
         public async Task<ActionResult> DeleteAsync(Product pro)
         {
+            var data = await Product.Delete(pro.Id);
 
-                bool a = await db.DeleteProductAsync(pro.Id);
-                if (a == true)
+            if (data)
                 {
-                    TempData["Message"] = "<script>alert('Product Delted Successfully')</script>";
+                    TempData["Message"] = "<script>alert('Product Deleted Successfully')</script>";
                     return RedirectToAction("Index");
                 }
                 else
@@ -165,29 +124,7 @@ namespace InventryShop.Controllers
                     TempData["Message"] = "<script>alert('Product Not Deleted')</script>";
                     ModelState.Clear();
                 }
-
-
-            
             return View();
-
-
-
-            //    db.Entry(p).State = EntityState.Deleted;
-            //    int a =await db.SaveChangesAsync();
-
-            //    if (a > 0)
-            //    {
-            //        TempData["Message"] = "<script>alert('Data Deleted Successfully')</script>";
-            //        return RedirectToAction("Index");
-            //    }
-            //    else
-            //    {
-            //        TempData["Message"] = "<script>alert('Data Not deleted')</script>";
-            //    }
-
-            //    return View();
-
-            //}
         }
     }
 }

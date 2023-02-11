@@ -72,7 +72,7 @@
                     <button class="btn btn-success"> @Html.ActionLink("Product List", "ProductList", new { id = item.Id })</button>
                 </td>
                 if (User.IsInRole("Admin"))
-                                {
+                {
 
                             <td>
                                 <button class="btn btn-danger"> @Html.ActionLink("Deactive", "DeActive", new { id = item.Id })</button>
@@ -80,10 +80,10 @@
                             <td>
                                 <button class="btn btn-"> @Html.ActionLink("Add Product", "AddProduct", new { id = item.Id })</button>
                             </td>
-                                }
+                }
 
             }
-            else
+                else
             {
                 <td>
                     <button class="btn btn-success"> @Html.ActionLink("Active", "Active", new { id = item.Id })</button>

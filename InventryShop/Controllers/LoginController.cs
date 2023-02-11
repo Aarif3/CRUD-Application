@@ -13,6 +13,7 @@ namespace InventryShop.Controllers
 {
     public class LoginController : Controller
     {
+
         ProductContext db =new ProductContext();
 
         // GET: Login
@@ -41,18 +42,11 @@ namespace InventryShop.Controllers
 
         
         [HttpPost]
-        public ActionResult Login(SignUp sp,string ReturnUrl)
+        public ActionResult Login(SignUp sp)
         {
             var s = db.SignupTbl.FirstOrDefault(model => model.UserName == sp.UserName && model.Password == sp.Password);
             if(s != null)
             {
-                //FormsAuthentication.SetAuthCookie(sp.UserName, false);
-                //if (Url.IsLocalUrl(ReturnUrl) && ReturnUrl.Length > 1 && ReturnUrl.StartsWith("/"))
-                //{
-                //    return Redirect(ReturnUrl);
-
-                //}
-
                 var token = TokenCreate.JwtCreateToken(s);
 
                 Response.Cookies.Set(new HttpCookie("Bearer", token));
@@ -71,7 +65,6 @@ namespace InventryShop.Controllers
         {
             var cookie = Request.Cookies["Bearer"];
             cookie.Expires = DateTime.Now.AddMinutes(2);
-
             Response.Cookies.Add(cookie);
             return RedirectToAction("Login");
         }

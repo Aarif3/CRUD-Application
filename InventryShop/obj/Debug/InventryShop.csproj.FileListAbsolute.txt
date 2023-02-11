@@ -141,3 +141,8 @@ C:\MVC\InventryShop\InventryShop\bin\System.Threading.Tasks.Extensions.xml
 C:\MVC\InventryShop\InventryShop\bin\System.ValueTuple.xml
 C:\MVC\InventryShop\InventryShop\obj\Debug\InventryShop.Migrations.addingRoleInSignUpTbl.resources
 C:\MVC\InventryShop\InventryShop\obj\Debug\InventryShop.Migrations.DeletingRoleBasedTbl.resources
+C:\MVC\InventryShop\InventryShop\bin\Unity.Abstractions.dll
+C:\MVC\InventryShop\InventryShop\bin\Unity.Container.dll
+C:\MVC\InventryShop\InventryShop\bin\Unity.Mvc5.dll
+C:\MVC\InventryShop\InventryShop\bin\Unity.Abstractions.pdb
+C:\MVC\InventryShop\InventryShop\bin\Unity.Container.pdb

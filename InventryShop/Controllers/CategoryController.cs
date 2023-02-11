@@ -23,7 +23,6 @@ namespace InventryShop.Controllers
         // GET: Category
         public async Task<ActionResult> Index(int PageNumber =1)
         {
-            //List<Category> data = await db.GetCategories();
 
             var parameter = new[]
             {
@@ -53,7 +52,7 @@ namespace InventryShop.Controllers
             if (ModelState.IsValid == true)
             {
                 bool a =await db.CreateCategory(c);
-                //int a =await db.SaveChangesAsync();
+                
                 if (a == true)
                 {
                     TempData["Message"] = "<script>alert('Item Created successfully')</script>";
@@ -72,12 +71,10 @@ namespace InventryShop.Controllers
         [Authorize(Roles ="Admin")]
         public async Task<ActionResult> EditAsync(int id)
         {
-            //var idvalue =await db.Categories.Where(Model => Model.Id == id).FirstOrDefaultAsync();
+            
             var idvalue =await db.GetCategoryByID(id);
             return View(idvalue);
         }
-
-
 
         [HttpPost]
         [ActionName("Edit")]
@@ -88,8 +85,7 @@ namespace InventryShop.Controllers
             if (ModelState.IsValid)
             {
                 bool a =await db.EditCategory(c);
-                //db.Entry(c).State = EntityState.Modified;
-                //int a =await  db.SaveChangesAsync();
+                
                 if (a== true)
                 {
                     TempData["Message"] = "<script>alert('Edited Successfully')</script>";
@@ -109,7 +105,6 @@ namespace InventryShop.Controllers
         [ActionName("Details")]
         public async Task<ActionResult> DetailsAsync(int id)
         {
-            //var detailsValue = await db.Categories.Where(Model => Model.Id ==id).FirstOrDefaultAsync();
             var detailsvalue =await db.GetCategoryByID(id);
             return View(detailsvalue);
 
@@ -118,10 +113,8 @@ namespace InventryShop.Controllers
 
         [ActionName("Delete")]
         [Authorize(Roles = "Admin")]
-
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            //var deleteValue =await db.Categories.Where(Model => Model.Id == id).FirstOrDefaultAsync();
             var deleteValue =await db.GetCategoryByID(id);
             return View(deleteValue);
         }
@@ -132,9 +125,6 @@ namespace InventryShop.Controllers
 
         public async Task<ActionResult> DeleteAsync(Category c)
         {
-
-            //db.Entry(c).State = EntityState.Deleted;
-            //int a =await db.SaveChangesAsync();
             bool a =await db.DeleteCategory(c.Id);
             if (a == true)
             {
@@ -153,10 +143,8 @@ namespace InventryShop.Controllers
 
         [ActionName("AddProduct")]
         [Authorize(Roles = "Admin")]
-
         public async Task<ActionResult> AddProductAsync(int id)
         {
-            //var data = await db.AddProduct(id);
             Session["CatagoryId"] = id;
             var data = await db.Products.ToListAsync();
             return View(data);
@@ -179,27 +167,7 @@ namespace InventryShop.Controllers
             }
             return RedirectToAction("ProductList", "Category",new {id = Cid});
         }
-        //    CategoryList list = new CategoryList();
-
-        //    list.ProductId = Pid;
-        //    list.CategoryId = Cid;
-        //    list.IsActive = true;
-
-        //    var data = db.CategoriesList.Add(list);
-        //    int a = await db.SaveChangesAsync();
-        //    if (a > 0)
-        //    {
-        //        TempData["Message"] = "<script>alert('Product Added Successfully')</script>";
-        //        return RedirectToAction("ProductList", new { id = list.CategoryId });
-        //    }
-        //    else
-        //    {
-        //        TempData["Message"] = "<script>alert('Product Not Added')</script>";
-        //    }
-
-        //    return RedirectToAction("ProductList","Category", new {id = list.CategoryId });
-
-        //}
+       
 
         [ActionName("ProductList")]
         public async Task<ActionResult>GetProductList(int id)
@@ -208,16 +176,7 @@ namespace InventryShop.Controllers
             return View(a);
 
         }
-        //    SqlParameter[] param = new SqlParameter[]
-        //    {
-        //        new SqlParameter ("@CatagoryId",id)
-        //    };
-        //    var data = await db.Database.SqlQuery<Product>(" @CatagoryId = @CatagoryId",param).ToListAsync();
-
-
-
-        //    return View(data); 
-        //}
+        
 
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeActive(Category cat)
@@ -242,7 +201,6 @@ namespace InventryShop.Controllers
             bool a =await db.ActiveCategory(cat.Id);
             if (a == true)
             {
-                //TempData["Message"] = "<script>alert('Category Activated Successfully')</script>";
                 return RedirectToAction("Index");
             }
             else
